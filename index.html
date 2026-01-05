@@ -1,64 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Carteira de Vendas</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- libs export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#f5f5f7;
+  --card:#ffffff;
+  --text:#1a1a1a;
+  --muted:#6b7280;
+  --green:#4ade80;
+  --red:#dc2626;
+  --line:#e5e7eb;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter,-apple-system,BlinkMacSystemFont,Segoe UI,Arial;
+  background:linear-gradient(180deg,#f5f5f7,#e5e5e7);
+  color:var(--text);
+}
+header{
+  background:linear-gradient(180deg,#2c2c2e,#1c1c1e);
+  color:#fff;
+  padding:14px 16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+header h1{
+  font-size:16px;
+  margin:0;
+}
+header button{
+  background:var(--green);
+  border:none;
+  border-radius:10px;
+  padding:8px 12px;
+  font-weight:800;
+  cursor:pointer;
+}
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:16px;
+}
+.summary{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+.card{
+  background:var(--card);
+  border-radius:16px;
+  padding:14px;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+.kpi-label{
+  font-size:12px;
+  color:var(--muted);
+  font-weight:700;
+}
+.kpi-value{
+  font-size:22px;
+  font-weight:900;
+  margin-top:6px;
+}
+.form{
+  margin-top:16px;
+}
+.row{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  border-bottom:1px solid var(--line);
+  padding:10px 0;
+}
+.row label{
+  width:110px;
+  font-size:12px;
+  color:var(--muted);
+  font-weight:700;
+}
+.row input{
+  flex:1;
+  border:none;
+  background:transparent;
+  font-size:14px;
+  font-weight:600;
+  text-align:right;
+}
+button.save{
+  margin-top:12px;
+  width:100%;
+  background:var(--green);
+  border:none;
+  border-radius:12px;
+  padding:12px;
+  font-weight:900;
+  cursor:pointer;
+}
+.list{
+  margin-top:20px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.item{
+  background:#fff;
+  border-radius:16px;
+  padding:12px;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+.item h3{
+  margin:0;
+  font-size:14px;
+  font-weight:900;
+}
+.badge{
+  display:inline-block;
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:800;
+}
+.entregue{background:#d1fae5}
+.pendente{background:#fff3cd}
+.actions{
+  display:flex;
+  gap:8px;
+  margin-top:8px;
+}
+.actions button{
+  flex:1;
+  border:none;
+  border-radius:10px;
+  padding:8px;
+  font-weight:800;
+  cursor:pointer;
+}
+.del{background:#fee2e2;color:var(--red)}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🌱 Carteira de Vendas</h1>
+  <div>
+    <button onclick="exportPDF()">PDF</button>
+    <button onclick="exportHTML()">HTML</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="summary">
+    <div class="card">
+      <div class="kpi-label">Total Vendido</div>
+      <div class="kpi-value" id="kpiTotal">R$ 0</div>
+    </div>
+    <div class="card">
+      <div class="kpi-label">Entregue</div>
+      <div class="kpi-value" id="kpiDelivered">R$ 0</div>
+    </div>
+    <div class="card">
+      <div class="kpi-label">A Entregar</div>
+      <div class="kpi-value" id="kpiRemain">R$ 0</div>
+    </div>
+  </div>
+
+  <div class="card form">
+    <div class="row">
+      <label>Cliente</label>
+      <input id="client">
+    </div>
+    <div class="row">
+      <label>Produto</label>
+      <input id="product">
+    </div>
+    <div class="row">
+      <label>Valor</label>
+      <input id="total" type="number" max="9999999">
+    </div>
+    <div class="row">
+      <label>Entregue</label>
+      <input id="delivered" type="number" max="9999999">
+    </div>
+    <button class="save" onclick="add()">Salvar</button>
+  </div>
+
+  <div class="list" id="list"></div>
+
+</div>
+
 <script>
-  /* === EXPORTAÇÃO === */
+const KEY="carteira_vendas";
+let data = window.__EXPORTED_DATA__ || JSON.parse(localStorage.getItem(KEY)||"[]");
 
-  function exportPDF() {
-    const area = document.querySelector(".container");
+function save(){
+  localStorage.setItem(KEY,JSON.stringify(data));
+  render();
+}
 
-    html2canvas(area, { scale: 2 }).then(canvas => {
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jspdf.jsPDF("p", "mm", "a4");
+function money(v){
+  return v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+}
 
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
+function render(){
+  let total=0,del=0,rem=0;
+  const list=document.getElementById("list");
+  list.innerHTML="";
+  data.forEach((i,idx)=>{
+    total+=i.total;
+    del+=i.delivered;
+    rem+=Math.max(0,i.total-i.delivered);
+    const status=i.delivered>=i.total?"entregue":"pendente";
+    const el=document.createElement("div");
+    el.className="item";
+    el.innerHTML=`
+      <h3>${i.client} • ${i.product}</h3>
+      <div class="badge ${status}">${status==="entregue"?"Entregue":"A entregar"}</div>
+      <div>Total: <b>${money(i.total)}</b></div>
+      <div>Entregue: <b>${money(i.delivered)}</b></div>
+      <div class="actions">
+        <button class="del" onclick="remove(${idx})">Excluir</button>
+      </div>
+    `;
+    list.appendChild(el);
+  });
+  document.getElementById("kpiTotal").innerText=money(total);
+  document.getElementById("kpiDelivered").innerText=money(del);
+  document.getElementById("kpiRemain").innerText=money(rem);
+}
 
-      const imgWidth = pageWidth;
-      const imgHeight = canvas.height * imgWidth / canvas.width;
+function add(){
+  const c=client.value.trim();
+  const p=product.value.trim();
+  const t=Number(total.value||0);
+  const d=Number(delivered.value||0);
+  if(!c||!p||t<=0) return alert("Preencha corretamente");
+  data.unshift({client:c,product:p,total:t,delivered:Math.min(d,t)});
+  client.value=product.value=total.value=delivered.value="";
+  save();
+}
 
-      let heightLeft = imgHeight;
-      let position = 0;
+function remove(i){
+  data.splice(i,1);
+  save();
+}
 
-      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
+function exportPDF(){
+  html2canvas(document.body,{scale:2}).then(c=>{
+    const pdf=new jspdf.jsPDF("p","mm","a4");
+    const w=pdf.internal.pageSize.getWidth();
+    const h=c.height*w/c.width;
+    pdf.addImage(c.toDataURL("image/png"),"PNG",0,0,w,h);
+    pdf.save("carteira-vendas.pdf");
+  });
+}
 
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
+function exportHTML(){
+  const html=`<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><title>Carteira de Vendas</title></head>
+<body>
+<script>
+window.__EXPORTED_DATA__=${JSON.stringify(data)};
+<\/script>
+${document.documentElement.innerHTML}
+</body></html>`;
+  const blob=new Blob([html],{type:"text/html"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="carteira-vendas.html";
+  a.click();
+}
 
-      pdf.save("carteira-vendas.pdf");
-      toast("PDF exportado");
-    });
-  }
-
-  function exportHTML() {
-    const content = document.documentElement.outerHTML;
-    const blob = new Blob([content], { type: "text/html;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "carteira-vendas.html";
-    a.click();
-
-    URL.revokeObjectURL(url);
-    toast("HTML exportado");
-  }
-
-  /* === BOTÕES === */
-  const btnExport = document.getElementById("btnExport");
-
-  btnExport.innerHTML = "Exportar PDF";
-  btnExport.onclick = exportPDF;
-
-  const btnHTML = document.createElement("button");
-  btnHTML.className = "btn btn-ghost";
-  btnHTML.textContent = "Exportar HTML";
-  btnHTML.onclick = exportHTML;
-
-  btnExport.parentNode.insertBefore(btnHTML, btnExport.nextSibling);
+render();
 </script>
+
+</body>
+</html>
