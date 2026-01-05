@@ -1,292 +1,605 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Carteira de Vendas</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carteira de Vendas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<!-- libs export -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(180deg, #F5F5F7 0%, #E5E5E7 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #1D1D1F;
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-<style>
-:root{
-  --bg:#f5f5f7;
-  --card:#ffffff;
-  --text:#1a1a1a;
-  --muted:#6b7280;
-  --green:#4ade80;
-  --red:#dc2626;
-  --line:#e5e7eb;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Inter,-apple-system,BlinkMacSystemFont,Segoe UI,Arial;
-  background:linear-gradient(180deg,#f5f5f7,#e5e5e7);
-  color:var(--text);
-}
-header{
-  background:linear-gradient(180deg,#2c2c2e,#1c1c1e);
-  color:#fff;
-  padding:14px 16px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-header h1{
-  font-size:16px;
-  margin:0;
-}
-header button{
-  background:var(--green);
-  border:none;
-  border-radius:10px;
-  padding:8px 12px;
-  font-weight:800;
-  cursor:pointer;
-}
-.container{
-  max-width:1100px;
-  margin:auto;
-  padding:16px;
-}
-.summary{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:12px;
-}
-.card{
-  background:var(--card);
-  border-radius:16px;
-  padding:14px;
-  box-shadow:0 2px 8px rgba(0,0,0,.08);
-}
-.kpi-label{
-  font-size:12px;
-  color:var(--muted);
-  font-weight:700;
-}
-.kpi-value{
-  font-size:22px;
-  font-weight:900;
-  margin-top:6px;
-}
-.form{
-  margin-top:16px;
-}
-.row{
-  display:flex;
-  gap:10px;
-  align-items:center;
-  border-bottom:1px solid var(--line);
-  padding:10px 0;
-}
-.row label{
-  width:110px;
-  font-size:12px;
-  color:var(--muted);
-  font-weight:700;
-}
-.row input{
-  flex:1;
-  border:none;
-  background:transparent;
-  font-size:14px;
-  font-weight:600;
-  text-align:right;
-}
-button.save{
-  margin-top:12px;
-  width:100%;
-  background:var(--green);
-  border:none;
-  border-radius:12px;
-  padding:12px;
-  font-weight:900;
-  cursor:pointer;
-}
-.list{
-  margin-top:20px;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-.item{
-  background:#fff;
-  border-radius:16px;
-  padding:12px;
-  box-shadow:0 2px 8px rgba(0,0,0,.08);
-}
-.item h3{
-  margin:0;
-  font-size:14px;
-  font-weight:900;
-}
-.badge{
-  display:inline-block;
-  padding:4px 10px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:800;
-}
-.entregue{background:#d1fae5}
-.pendente{background:#fff3cd}
-.actions{
-  display:flex;
-  gap:8px;
-  margin-top:8px;
-}
-.actions button{
-  flex:1;
-  border:none;
-  border-radius:10px;
-  padding:8px;
-  font-weight:800;
-  cursor:pointer;
-}
-.del{background:#fee2e2;color:var(--red)}
-</style>
+        header {
+            background: linear-gradient(135deg, #007AFF 0%, #0051D5 100%);
+            padding: 24px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 16px rgba(0, 122, 255, 0.3);
+        }
+
+        h1 {
+            color: white;
+            font-size: 1.5em;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .kpi-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 
+                0 1px 3px rgba(0, 0, 0, 0.08),
+                0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .kpi-label {
+            font-size: 0.75em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #86868B;
+            margin-bottom: 8px;
+        }
+
+        .kpi-value {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #1D1D1F;
+        }
+
+        .form-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 
+                0 1px 3px rgba(0, 0, 0, 0.08),
+                0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .form-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1D1D1F;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 0.9em;
+            font-weight: 500;
+            color: #1D1D1F;
+        }
+
+        input {
+            padding: 10px 12px;
+            border: 1px solid #D1D1D6;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-family: inherit;
+            background: white;
+            transition: all 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #007AFF;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        }
+
+        input[type="number"] {
+            max-width: 150px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #007AFF 0%, #0051D5 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 122, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: #E5E5E7;
+            color: #1D1D1F;
+        }
+
+        .btn-secondary:hover {
+            background: #D1D1D6;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .list-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 
+                0 1px 3px rgba(0, 0, 0, 0.08),
+                0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .list-header {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1D1D1F;
+        }
+
+        .item {
+            background: white;
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #E5E5E7;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .item-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .item-name {
+            font-weight: 600;
+            font-size: 0.95em;
+            color: #1D1D1F;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        .status-delivered {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .item-values {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            font-size: 0.85em;
+        }
+
+        .value-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .value-label {
+            color: #86868B;
+            font-size: 0.9em;
+        }
+
+        .value-amount {
+            font-weight: 600;
+            color: #1D1D1F;
+        }
+
+        .btn-delete {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            color: #FF3B30;
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-delete:hover {
+            background: rgba(255, 59, 48, 0.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #86868B;
+        }
+
+        .export-buttons {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-float {
+            width: 56px;
+            height: 56px;
+            border-radius: 28px;
+            border: none;
+            background: linear-gradient(135deg, #007AFF 0%, #0051D5 100%);
+            color: white;
+            font-size: 1.3em;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(0, 122, 255, 0.4);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-float:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 122, 255, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .item {
+                grid-template-columns: 1fr;
+            }
+
+            .export-buttons {
+                flex-direction: column;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            .form-card,
+            .export-buttons,
+            .btn-delete {
+                display: none;
+            }
+        }
+    </style>
 </head>
-
 <body>
+    <div class="container">
+        <header>
+            <h1>Carteira de Vendas</h1>
+        </header>
 
-<header>
-  <h1>🌱 Carteira de Vendas</h1>
-  <div>
-    <button onclick="exportPDF()">PDF</button>
-    <button onclick="exportHTML()">HTML</button>
-  </div>
-</header>
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-label">Total Vendido</div>
+                <div class="kpi-value" id="totalVendido">R$ 0,00</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Total Entregue</div>
+                <div class="kpi-value" id="totalEntregue">R$ 0,00</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Falta Entregar</div>
+                <div class="kpi-value" id="faltaEntregar">R$ 0,00</div>
+            </div>
+        </div>
 
-<div class="container">
+        <div class="form-card">
+            <div class="form-title">Nova Venda</div>
+            <form id="vendaForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Cliente</label>
+                        <input type="text" id="cliente" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Produto</label>
+                        <input type="text" id="produto" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Valor Total</label>
+                        <input type="number" id="valorTotal" min="0" max="9999999" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Valor Entregue</label>
+                        <input type="number" id="valorEntregue" min="0" max="9999999" step="0.01" value="0" required>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">Adicionar Venda</button>
+                    <button type="button" class="btn btn-secondary" onclick="limparFormulario()">Limpar</button>
+                </div>
+            </form>
+        </div>
 
-  <div class="summary">
-    <div class="card">
-      <div class="kpi-label">Total Vendido</div>
-      <div class="kpi-value" id="kpiTotal">R$ 0</div>
+        <div class="list-card">
+            <div class="list-header">Vendas Registradas</div>
+            <div id="listaVendas"></div>
+        </div>
     </div>
-    <div class="card">
-      <div class="kpi-label">Entregue</div>
-      <div class="kpi-value" id="kpiDelivered">R$ 0</div>
+
+    <div class="export-buttons">
+        <button class="btn-float" onclick="exportarPDF()" title="Exportar PDF">📄</button>
+        <button class="btn-float" onclick="exportarHTML()" title="Exportar HTML">💾</button>
     </div>
-    <div class="card">
-      <div class="kpi-label">A Entregar</div>
-      <div class="kpi-value" id="kpiRemain">R$ 0</div>
-    </div>
-  </div>
 
-  <div class="card form">
-    <div class="row">
-      <label>Cliente</label>
-      <input id="client">
-    </div>
-    <div class="row">
-      <label>Produto</label>
-      <input id="product">
-    </div>
-    <div class="row">
-      <label>Valor</label>
-      <input id="total" type="number" max="9999999">
-    </div>
-    <div class="row">
-      <label>Entregue</label>
-      <input id="delivered" type="number" max="9999999">
-    </div>
-    <button class="save" onclick="add()">Salvar</button>
-  </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-  <div class="list" id="list"></div>
+    <script>
+        // Verifica se está rodando versão exportada
+        const isExported = window.__EXPORTED_DATA__ !== undefined;
+        
+        // Funções de gerenciamento de dados
+        function carregarVendas() {
+            if (isExported) {
+                return window.__EXPORTED_DATA__;
+            }
+            const dados = localStorage.getItem('vendas');
+            return dados ? JSON.parse(dados) : [];
+        }
 
-</div>
+        function salvarVendas(vendas) {
+            if (!isExported) {
+                localStorage.setItem('vendas', JSON.stringify(vendas));
+            }
+        }
 
-<script>
-const KEY="carteira_vendas";
-let data = window.__EXPORTED_DATA__ || JSON.parse(localStorage.getItem(KEY)||"[]");
+        function formatarMoeda(valor) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(valor);
+        }
 
-function save(){
-  localStorage.setItem(KEY,JSON.stringify(data));
-  render();
-}
+        function calcularStatus(valorTotal, valorEntregue) {
+            return valorEntregue >= valorTotal ? 'delivered' : 'pending';
+        }
 
-function money(v){
-  return v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-}
+        function atualizarKPIs() {
+            const vendas = carregarVendas();
+            const totalVendido = vendas.reduce((acc, v) => acc + parseFloat(v.valorTotal), 0);
+            const totalEntregue = vendas.reduce((acc, v) => acc + parseFloat(v.valorEntregue), 0);
+            const faltaEntregar = totalVendido - totalEntregue;
 
-function render(){
-  let total=0,del=0,rem=0;
-  const list=document.getElementById("list");
-  list.innerHTML="";
-  data.forEach((i,idx)=>{
-    total+=i.total;
-    del+=i.delivered;
-    rem+=Math.max(0,i.total-i.delivered);
-    const status=i.delivered>=i.total?"entregue":"pendente";
-    const el=document.createElement("div");
-    el.className="item";
-    el.innerHTML=`
-      <h3>${i.client} • ${i.product}</h3>
-      <div class="badge ${status}">${status==="entregue"?"Entregue":"A entregar"}</div>
-      <div>Total: <b>${money(i.total)}</b></div>
-      <div>Entregue: <b>${money(i.delivered)}</b></div>
-      <div class="actions">
-        <button class="del" onclick="remove(${idx})">Excluir</button>
-      </div>
-    `;
-    list.appendChild(el);
-  });
-  document.getElementById("kpiTotal").innerText=money(total);
-  document.getElementById("kpiDelivered").innerText=money(del);
-  document.getElementById("kpiRemain").innerText=money(rem);
-}
+            document.getElementById('totalVendido').textContent = formatarMoeda(totalVendido);
+            document.getElementById('totalEntregue').textContent = formatarMoeda(totalEntregue);
+            document.getElementById('faltaEntregar').textContent = formatarMoeda(faltaEntregar);
+        }
 
-function add(){
-  const c=client.value.trim();
-  const p=product.value.trim();
-  const t=Number(total.value||0);
-  const d=Number(delivered.value||0);
-  if(!c||!p||t<=0) return alert("Preencha corretamente");
-  data.unshift({client:c,product:p,total:t,delivered:Math.min(d,t)});
-  client.value=product.value=total.value=delivered.value="";
-  save();
-}
+        function renderizarVendas() {
+            const vendas = carregarVendas();
+            const container = document.getElementById('listaVendas');
 
-function remove(i){
-  data.splice(i,1);
-  save();
-}
+            if (vendas.length === 0) {
+                container.innerHTML = '<div class="empty-state">Nenhuma venda registrada</div>';
+                return;
+            }
 
-function exportPDF(){
-  html2canvas(document.body,{scale:2}).then(c=>{
-    const pdf=new jspdf.jsPDF("p","mm","a4");
-    const w=pdf.internal.pageSize.getWidth();
-    const h=c.height*w/c.width;
-    pdf.addImage(c.toDataURL("image/png"),"PNG",0,0,w,h);
-    pdf.save("carteira-vendas.pdf");
-  });
-}
+            container.innerHTML = vendas.map((venda, index) => {
+                const status = calcularStatus(venda.valorTotal, venda.valorEntregue);
+                const valorRestante = parseFloat(venda.valorTotal) - parseFloat(venda.valorEntregue);
+                const statusText = status === 'delivered' ? 'Entregue' : 'A Entregar';
+                const statusClass = status === 'delivered' ? 'status-delivered' : 'status-pending';
 
-function exportHTML(){
-  const html=`<!DOCTYPE html>
+                return `
+                    <div class="item">
+                        <div class="item-info">
+                            <div class="item-header">
+                                <span class="item-name">${venda.cliente} - ${venda.produto}</span>
+                                <span class="status-badge ${statusClass}">${statusText}</span>
+                            </div>
+                            <div class="item-values">
+                                <div class="value-item">
+                                    <span class="value-label">Total</span>
+                                    <span class="value-amount">${formatarMoeda(venda.valorTotal)}</span>
+                                </div>
+                                <div class="value-item">
+                                    <span class="value-label">Entregue</span>
+                                    <span class="value-amount">${formatarMoeda(venda.valorEntregue)}</span>
+                                </div>
+                                <div class="value-item">
+                                    <span class="value-label">Restante</span>
+                                    <span class="value-amount">${formatarMoeda(valorRestante)}</span>
+                                </div>
+                            </div>
+                        </div>
+                        ${!isExported ? `<button class="btn-delete" onclick="excluirVenda(${index})" title="Excluir">×</button>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function adicionarVenda(event) {
+            event.preventDefault();
+
+            const venda = {
+                cliente: document.getElementById('cliente').value.trim(),
+                produto: document.getElementById('produto').value.trim(),
+                valorTotal: parseFloat(document.getElementById('valorTotal').value),
+                valorEntregue: parseFloat(document.getElementById('valorEntregue').value)
+            };
+
+            const vendas = carregarVendas();
+            vendas.push(venda);
+            salvarVendas(vendas);
+
+            limparFormulario();
+            atualizarInterface();
+        }
+
+        function excluirVenda(index) {
+            if (confirm('Deseja realmente excluir esta venda?')) {
+                const vendas = carregarVendas();
+                vendas.splice(index, 1);
+                salvarVendas(vendas);
+                atualizarInterface();
+            }
+        }
+
+        function limparFormulario() {
+            document.getElementById('vendaForm').reset();
+            document.getElementById('valorEntregue').value = '0';
+        }
+
+        function atualizarInterface() {
+            atualizarKPIs();
+            renderizarVendas();
+        }
+
+        async function exportarPDF() {
+            const { jsPDF } = window.jspdf;
+            
+            // Oculta botões temporariamente
+            const exportButtons = document.querySelector('.export-buttons');
+            const formCard = document.querySelector('.form-card');
+            exportButtons.style.display = 'none';
+            formCard.style.display = 'none';
+
+            try {
+                const canvas = await html2canvas(document.body, {
+                    scale: 2,
+                    logging: false,
+                    useCORS: true
+                });
+
+                const imgWidth = 210;
+                const pageHeight = 297;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgData = canvas.toDataURL('image/png');
+                
+                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                pdf.save('carteira-vendas.pdf');
+            } finally {
+                exportButtons.style.display = 'flex';
+                formCard.style.display = 'block';
+            }
+        }
+
+        function exportarHTML() {
+            const vendas = carregarVendas();
+            const dataStr = JSON.stringify(vendas);
+            
+            const htmlTemplate = `<!DOCTYPE html>
 <html lang="pt-BR">
-<head><meta charset="UTF-8"><title>Carteira de Vendas</title></head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carteira de Vendas - Exportado</title>
+    <style>
+        ${document.querySelector('style').textContent}
+    </style>
+</head>
 <body>
-<script>
-window.__EXPORTED_DATA__=${JSON.stringify(data)};
-<\/script>
-${document.documentElement.innerHTML}
-</body></html>`;
-  const blob=new Blob([html],{type:"text/html"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="carteira-vendas.html";
-  a.click();
-}
+    <script>
+        window.__EXPORTED_DATA__ = ${dataStr};
+    </script>
+    ${document.body.innerHTML.replace(/<script[\s\S]*?<\/script>/gi, '')}
+    <script>
+        ${document.querySelector('script:not([src])').textContent}
+        
+        // Inicia interface com dados exportados
+        document.addEventListener('DOMContentLoaded', () => {
+            atualizarInterface();
+        });
+    </script>
+</body>
+</html>`;
 
-render();
-</script>
+            const blob = new Blob([htmlTemplate], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'carteira-vendas.html';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
 
+        // Event Listeners
+        document.getElementById('vendaForm').addEventListener('submit', adicionarVenda);
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            atualizarInterface();
+            
+            // Oculta formulário se for versão exportada
+            if (isExported) {
+                document.querySelector('.form-card').style.display = 'none';
+                document.querySelector('.export-buttons').style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>
