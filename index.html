@@ -1,0 +1,64 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+  /* === EXPORTAÇÃO === */
+
+  function exportPDF() {
+    const area = document.querySelector(".container");
+
+    html2canvas(area, { scale: 2 }).then(canvas => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jspdf.jsPDF("p", "mm", "a4");
+
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      const imgWidth = pageWidth;
+      const imgHeight = canvas.height * imgWidth / canvas.width;
+
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      pdf.save("carteira-vendas.pdf");
+      toast("PDF exportado");
+    });
+  }
+
+  function exportHTML() {
+    const content = document.documentElement.outerHTML;
+    const blob = new Blob([content], { type: "text/html;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "carteira-vendas.html";
+    a.click();
+
+    URL.revokeObjectURL(url);
+    toast("HTML exportado");
+  }
+
+  /* === BOTÕES === */
+  const btnExport = document.getElementById("btnExport");
+
+  btnExport.innerHTML = "Exportar PDF";
+  btnExport.onclick = exportPDF;
+
+  const btnHTML = document.createElement("button");
+  btnHTML.className = "btn btn-ghost";
+  btnHTML.textContent = "Exportar HTML";
+  btnHTML.onclick = exportHTML;
+
+  btnExport.parentNode.insertBefore(btnHTML, btnExport.nextSibling);
+</script>
