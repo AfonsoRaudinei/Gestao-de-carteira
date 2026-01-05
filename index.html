@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carteira de Vendas</title>
+    <title>Sistema de Vendas - Carteira Pro</title>
     <style>
         * {
             margin: 0;
@@ -12,77 +12,132 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: linear-gradient(180deg, #F5F5F7 0%, #E5E5E7 100%);
-            min-height: 100vh;
             padding: 20px;
-            color: #1D1D1F;
+            min-height: 100vh;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
-        header {
-            background: linear-gradient(135deg, #007AFF 0%, #0051D5 100%);
-            padding: 24px;
-            border-radius: 16px;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 16px rgba(0, 122, 255, 0.3);
+        /* HEADER */
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        h1 {
-            color: white;
+        .header h1 {
             font-size: 1.5em;
-            font-weight: 600;
-            text-align: center;
+            color: #1D1D1F;
         }
 
-        .kpi-grid {
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* CARDS DE RESUMO */
+        .summary-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 16px;
             margin-bottom: 24px;
         }
 
-        .kpi-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 20px;
+        .summary-card {
+            background: white;
             border-radius: 12px;
-            box-shadow: 
-                0 1px 3px rgba(0, 0, 0, 0.08),
-                0 2px 8px rgba(0, 0, 0, 0.04);
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
         }
 
-        .kpi-label {
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #007AFF 0%, #0051D5 100%);
+        }
+
+        .summary-label {
             font-size: 0.75em;
+            color: #86868B;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: #86868B;
             margin-bottom: 8px;
         }
 
-        .kpi-value {
-            font-size: 1.5em;
-            font-weight: 600;
+        .summary-value {
+            font-size: 2em;
+            font-weight: 700;
             color: #1D1D1F;
         }
 
+        .summary-trend {
+            font-size: 0.8em;
+            color: #34C759;
+            margin-top: 4px;
+        }
+
+        /* TABS */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #E5E5E7;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            color: #86868B;
+            font-size: 0.95em;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: #007AFF;
+        }
+
+        .tab.active {
+            color: #007AFF;
+            border-bottom-color: #007AFF;
+        }
+
+        /* FORMULÁRIO */
         .form-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 24px;
+            background: white;
             border-radius: 12px;
+            padding: 24px;
             margin-bottom: 24px;
-            box-shadow: 
-                0 1px 3px rgba(0, 0, 0, 0.08),
-                0 2px 8px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            display: none;
+        }
+
+        .form-card.active {
+            display: block;
         }
 
         .form-title {
-            font-size: 1.1em;
+            font-size: 1.3em;
             font-weight: 600;
             margin-bottom: 20px;
             color: #1D1D1F;
@@ -95,58 +150,81 @@
             margin-bottom: 20px;
         }
 
-        .form-group {
+        .input-group {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
 
-        label {
-            font-size: 0.9em;
+        .input-group label {
+            font-size: 0.85em;
             font-weight: 500;
             color: #1D1D1F;
         }
 
-        input {
+        .input-group input,
+        .input-group select,
+        .input-group textarea {
             padding: 10px 12px;
             border: 1px solid #D1D1D6;
             border-radius: 8px;
             font-size: 0.95em;
-            font-family: inherit;
-            background: white;
             transition: all 0.2s;
+            font-family: inherit;
         }
 
-        input:focus {
+        .input-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus,
+        .input-group textarea:focus {
             outline: none;
             border-color: #007AFF;
             box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
         }
 
-        input[type="number"] {
-            max-width: 150px;
+        .input-group input[readonly] {
+            background: #F5F5F7;
+            color: #86868B;
+        }
+
+        /* BOTÕES */
+        .button-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
         .btn {
-            padding: 12px 20px;
+            padding: 12px 24px;
             border: none;
             border-radius: 10px;
             font-size: 0.95em;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.2s;
-            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .btn-primary {
             background: linear-gradient(135deg, #007AFF 0%, #0051D5 100%);
             color: white;
-            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+            box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(0, 122, 255, 0.4);
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.4);
         }
 
         .btn-secondary {
@@ -154,452 +232,1145 @@
             color: #1D1D1F;
         }
 
-        .btn-secondary:hover {
+        .btn-secondary:hover:not(:disabled) {
             background: #D1D1D6;
         }
 
-        .btn-group {
+        .btn-success {
+            background: linear-gradient(135deg, #34C759 0%, #28A745 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #FF3B30 0%, #D32F2F 100%);
+            color: white;
+        }
+
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            padding: 0;
             display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
         }
 
-        .list-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 
-                0 1px 3px rgba(0, 0, 0, 0.08),
-                0 2px 8px rgba(0, 0, 0, 0.04);
-        }
-
-        .list-header {
-            font-size: 1.1em;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: #1D1D1F;
-        }
-
-        .item {
+        /* TABELA */
+        .table-card {
             background: white;
-            padding: 16px;
-            border-radius: 10px;
-            margin-bottom: 12px;
-            border: 1px solid #E5E5E7;
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 16px;
-            align-items: center;
-        }
-
-        .item-info {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .item-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .item-name {
-            font-weight: 600;
-            font-size: 0.95em;
-            color: #1D1D1F;
-        }
-
-        .status-badge {
-            padding: 4px 12px;
             border-radius: 12px;
-            font-size: 0.75em;
-            font-weight: 600;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
         }
 
-        .status-pending {
-            background: #FFEBEE;
-            color: #C62828;
-        }
-
-        .status-delivered {
-            background: #E8F5E9;
-            color: #2E7D32;
-        }
-
-        .item-values {
+        .table-header {
             display: flex;
-            gap: 16px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
             flex-wrap: wrap;
-            font-size: 0.85em;
+            gap: 12px;
         }
 
-        .value-item {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 200px;
+            max-width: 400px;
         }
 
-        .value-label {
-            color: #86868B;
+        .search-box input {
+            width: 100%;
+            padding: 10px 12px 10px 36px;
+            border: 1px solid #D1D1D6;
+            border-radius: 8px;
             font-size: 0.9em;
         }
 
-        .value-amount {
-            font-weight: 600;
-            color: #1D1D1F;
+        .search-box::before {
+            content: '🔍';
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.9em;
         }
 
-        .btn-delete {
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px;
+            font-size: 0.75em;
+            color: #86868B;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #E5E5E7;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #F5F5F7;
+            font-size: 0.9em;
+        }
+
+        tbody tr {
+            transition: background 0.15s;
+        }
+
+        tbody tr:hover {
+            background: #F9FAFB;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-concluida {
+            background: #D1F4E0;
+            color: #0D7A3F;
+        }
+
+        .status-pendente {
+            background: #FFF4CD;
+            color: #9C6F19;
+        }
+
+        /* AÇÕES DA TABELA */
+        .action-buttons {
+            display: flex;
+            gap: 4px;
+        }
+
+        .action-btn {
             width: 32px;
             height: 32px;
             border: none;
             background: transparent;
-            color: #FF3B30;
-            font-size: 1.2em;
-            cursor: pointer;
             border-radius: 6px;
-            transition: all 0.2s;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.2s;
+            font-size: 1.1em;
         }
 
-        .btn-delete:hover {
-            background: rgba(255, 59, 48, 0.1);
+        .action-btn:hover {
+            background: #F5F5F7;
         }
 
+        /* EMPTY STATE */
         .empty-state {
             text-align: center;
-            padding: 40px;
+            padding: 60px 20px;
             color: #86868B;
         }
 
-        .export-buttons {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            display: flex;
-            gap: 12px;
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 16px;
+            opacity: 0.3;
         }
 
-        .btn-float {
-            width: 56px;
-            height: 56px;
-            border-radius: 28px;
-            border: none;
-            background: linear-gradient(135deg, #007AFF 0%, #0051D5 100%);
-            color: white;
-            font-size: 1.3em;
-            cursor: pointer;
-            box-shadow: 0 4px 16px rgba(0, 122, 255, 0.4);
-            transition: all 0.2s;
-            display: flex;
+        /* MODAL */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: none;
             align-items: center;
             justify-content: center;
+            z-index: 1000;
+            padding: 20px;
         }
 
-        .btn-float:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 122, 255, 0.5);
+        .modal-overlay.active {
+            display: flex;
         }
 
+        .modal {
+            background: white;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid #E5E5E7;
+        }
+
+        .modal-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #1D1D1F;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid #E5E5E7;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        /* LOADING */
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1D1D1F;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            display: none;
+            align-items: center;
+            gap: 12px;
+            z-index: 2000;
+            animation: toastSlideIn 0.3s ease-out;
+        }
+
+        .toast.active {
+            display: flex;
+        }
+
+        @keyframes toastSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .toast-success {
+            background: #34C759;
+        }
+
+        .toast-error {
+            background: #FF3B30;
+        }
+
+        /* RESPONSIVE */
         @media (max-width: 768px) {
             .form-grid {
                 grid-template-columns: 1fr;
             }
 
-            .item {
+            .summary-grid {
                 grid-template-columns: 1fr;
             }
 
-            .export-buttons {
+            .header {
                 flex-direction: column;
-            }
-        }
-
-        @media print {
-            body {
-                background: white;
+                gap: 16px;
             }
 
-            .form-card,
-            .export-buttons,
-            .btn-delete {
-                display: none;
+            .table-wrapper {
+                overflow-x: scroll;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>Carteira de Vendas</h1>
-        </header>
-
-        <div class="kpi-grid">
-            <div class="kpi-card">
-                <div class="kpi-label">Total Vendido</div>
-                <div class="kpi-value" id="totalVendido">R$ 0,00</div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-label">Total Entregue</div>
-                <div class="kpi-value" id="totalEntregue">R$ 0,00</div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-label">Falta Entregar</div>
-                <div class="kpi-value" id="faltaEntregar">R$ 0,00</div>
+        <!-- HEADER -->
+        <div class="header">
+            <h1>📊 Carteira de Vendas Pro</h1>
+            <div class="header-actions">
+                <button class="btn btn-success" onclick="exportarPDF()">
+                    📄 Exportar PDF
+                </button>
             </div>
         </div>
 
-        <div class="form-card">
-            <div class="form-title">Nova Venda</div>
-            <form id="vendaForm">
+        <!-- RESUMO -->
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="summary-label">Total de Vendas</div>
+                <div class="summary-value" id="totalVendas">R$ 0,00</div>
+                <div class="summary-trend" id="trendVendas">↗ 0 vendas</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Total Recebido</div>
+                <div class="summary-value" id="totalRecebido">R$ 0,00</div>
+                <div class="summary-trend" id="trendRecebido">✓ 0%</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">A Receber</div>
+                <div class="summary-value" id="totalReceber">R$ 0,00</div>
+                <div class="summary-trend" id="trendReceber">⏳ Pendente</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Total de Clientes</div>
+                <div class="summary-value" id="totalClientes">0</div>
+                <div class="summary-trend">👥 Ativos</div>
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="tabs">
+            <button class="tab active" onclick="trocarTab('vendas')">Vendas</button>
+            <button class="tab" onclick="trocarTab('clientes')">Clientes</button>
+            <button class="tab" onclick="trocarTab('produtos')">Produtos</button>
+        </div>
+
+        <!-- TAB: VENDAS -->
+        <div id="tabVendas" class="form-card active">
+            <h2 class="form-title">Nova Venda</h2>
+            
+            <form id="formVenda" onsubmit="adicionarVenda(event)">
                 <div class="form-grid">
-                    <div class="form-group">
-                        <label>Cliente</label>
-                        <input type="text" id="cliente" required>
+                    <div class="input-group">
+                        <label>Cliente *</label>
+                        <select id="vendaCliente" required>
+                            <option value="">Selecione o cliente</option>
+                        </select>
                     </div>
-                    <div class="form-group">
-                        <label>Produto</label>
-                        <input type="text" id="produto" required>
+
+                    <div class="input-group">
+                        <label>Produto *</label>
+                        <select id="vendaProduto" required onchange="calcularTotalVenda()">
+                            <option value="">Selecione o produto</option>
+                        </select>
                     </div>
-                    <div class="form-group">
+
+                    <div class="input-group">
+                        <label>Quantidade *</label>
+                        <input type="number" id="vendaQuantidade" value="1" min="0.01" step="0.01" required oninput="calcularTotalVenda()">
+                    </div>
+
+                    <div class="input-group">
                         <label>Valor Total</label>
-                        <input type="number" id="valorTotal" min="0" max="9999999" step="0.01" required>
+                        <input type="text" id="vendaValorTotal" readonly>
                     </div>
-                    <div class="form-group">
+
+                    <div class="input-group">
                         <label>Valor Entregue</label>
-                        <input type="number" id="valorEntregue" min="0" max="9999999" step="0.01" value="0" required>
+                        <input type="number" id="vendaValorEntregue" value="0" min="0" step="0.01">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Data da Venda</label>
+                        <input type="date" id="vendaData" required>
                     </div>
                 </div>
-                <div class="btn-group">
-                    <button type="submit" class="btn btn-primary">Adicionar Venda</button>
-                    <button type="button" class="btn btn-secondary" onclick="limparFormulario()">Limpar</button>
+
+                <div class="input-group" style="margin-bottom: 20px;">
+                    <label>Observações</label>
+                    <textarea id="vendaObs" placeholder="Informações adicionais..."></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">
+                        ✓ Adicionar Venda
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="limparFormVenda()">
+                        ✕ Limpar
+                    </button>
                 </div>
             </form>
         </div>
 
-        <div class="list-card">
-            <div class="list-header">Vendas Registradas</div>
-            <div id="listaVendas"></div>
+        <!-- TAB: CLIENTES -->
+        <div id="tabClientes" class="form-card">
+            <h2 class="form-title">Novo Cliente</h2>
+            
+            <form id="formCliente" onsubmit="adicionarCliente(event)">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Nome Completo *</label>
+                        <input type="text" id="clienteNome" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>CPF/CNPJ</label>
+                        <input type="text" id="clienteCPF" placeholder="000.000.000-00">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Telefone</label>
+                        <input type="tel" id="clienteTelefone" placeholder="(00) 00000-0000">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Email</label>
+                        <input type="email" id="clienteEmail" placeholder="cliente@email.com">
+                    </div>
+                </div>
+
+                <div class="input-group" style="margin-bottom: 20px;">
+                    <label>Endereço</label>
+                    <textarea id="clienteEndereco" placeholder="Rua, número, bairro, cidade..."></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">
+                        ✓ Adicionar Cliente
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="limparFormCliente()">
+                        ✕ Limpar
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- TAB: PRODUTOS -->
+        <div id="tabProdutos" class="form-card">
+            <h2 class="form-title">Novo Produto</h2>
+            
+            <form id="formProduto" onsubmit="adicionarProduto(event)">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Nome do Produto *</label>
+                        <input type="text" id="produtoNome" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Categoria</label>
+                        <select id="produtoCategoria">
+                            <option value="Sementes">Sementes</option>
+                            <option value="Fertilizantes">Fertilizantes</option>
+                            <option value="Defensivos">Defensivos</option>
+                            <option value="Ferramentas">Ferramentas</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Preço Unitário *</label>
+                        <input type="number" id="produtoPreco" min="0" step="0.01" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Unidade</label>
+                        <select id="produtoUnidade">
+                            <option value="kg">Quilograma (kg)</option>
+                            <option value="L">Litro (L)</option>
+                            <option value="un">Unidade (un)</option>
+                            <option value="sc">Saca (sc)</option>
+                            <option value="cx">Caixa (cx)</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Estoque</label>
+                        <input type="number" id="produtoEstoque" value="0" min="0" step="0.01">
+                    </div>
+                </div>
+
+                <div class="input-group" style="margin-bottom: 20px;">
+                    <label>Descrição</label>
+                    <textarea id="produtoDescricao" placeholder="Informações sobre o produto..."></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">
+                        ✓ Adicionar Produto
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="limparFormProduto()">
+                        ✕ Limpar
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- TABELA DE VENDAS -->
+        <div class="table-card">
+            <div class="table-header">
+                <h2 class="form-title" style="margin: 0;">Histórico de Vendas</h2>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap; flex: 1; justify-content: flex-end;">
+                    <div class="search-box">
+                        <input type="text" id="searchVendas" placeholder="Buscar vendas..." oninput="buscarVendas()">
+                    </div>
+                    <select id="filtroCliente" onchange="filtrarVendas()" style="padding: 10px 12px; border: 1px solid #D1D1D6; border-radius: 8px;">
+                        <option value="">Todos os clientes</option>
+                    </select>
+                    <select id="filtroStatus" onchange="filtrarVendas()" style="padding: 10px 12px; border: 1px solid #D1D1D6; border-radius: 8px;">
+                        <option value="">Todos os status</option>
+                        <option value="concluida">Concluída</option>
+                        <option value="pendente">Pendente</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table id="tabelaVendas">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Cliente</th>
+                            <th>Produto</th>
+                            <th>Qtd</th>
+                            <th>Valor Total</th>
+                            <th>Entregue</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Vendas serão inseridas aqui -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <div class="empty-state-icon">📊</div>
+                <h3>Nenhuma venda registrada</h3>
+                <p>Adicione sua primeira venda para começar</p>
+            </div>
         </div>
     </div>
 
-    <div class="export-buttons">
-        <button class="btn-float" onclick="exportarPDF()" title="Exportar PDF">📄</button>
-        <button class="btn-float" onclick="exportarHTML()" title="Exportar HTML">💾</button>
+    <!-- MODAL DE DETALHES -->
+    <div id="modalDetalhes" class="modal-overlay" onclick="fecharModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 class="modal-title">Detalhes da Venda</h3>
+            </div>
+            <div class="modal-body" id="modalDetalhesBody">
+                <!-- Conteúdo será inserido aqui -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="fecharModal()">Fechar</button>
+            </div>
+        </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- TOAST -->
+    <div id="toast" class="toast">
+        <span id="toastMessage"></span>
+    </div>
+
+    <!-- JSPDF LIBRARY -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
     <script>
-        // Verifica se está rodando versão exportada
-        const isExported = window.__EXPORTED_DATA__ !== undefined;
-        
-        // Funções de gerenciamento de dados
-        function carregarVendas() {
-            if (isExported) {
-                return window.__EXPORTED_DATA__;
-            }
-            const dados = localStorage.getItem('vendas');
-            return dados ? JSON.parse(dados) : [];
-        }
-
-        function salvarVendas(vendas) {
-            if (!isExported) {
-                localStorage.setItem('vendas', JSON.stringify(vendas));
-            }
-        }
-
-        function formatarMoeda(valor) {
-            return new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
-            }).format(valor);
-        }
-
-        function calcularStatus(valorTotal, valorEntregue) {
-            return valorEntregue >= valorTotal ? 'delivered' : 'pending';
-        }
-
-        function atualizarKPIs() {
-            const vendas = carregarVendas();
-            const totalVendido = vendas.reduce((acc, v) => acc + parseFloat(v.valorTotal), 0);
-            const totalEntregue = vendas.reduce((acc, v) => acc + parseFloat(v.valorEntregue), 0);
-            const faltaEntregar = totalVendido - totalEntregue;
-
-            document.getElementById('totalVendido').textContent = formatarMoeda(totalVendido);
-            document.getElementById('totalEntregue').textContent = formatarMoeda(totalEntregue);
-            document.getElementById('faltaEntregar').textContent = formatarMoeda(faltaEntregar);
-        }
-
-        function renderizarVendas() {
-            const vendas = carregarVendas();
-            const container = document.getElementById('listaVendas');
-
-            if (vendas.length === 0) {
-                container.innerHTML = '<div class="empty-state">Nenhuma venda registrada</div>';
-                return;
+        // ========================================
+        // INDEXEDDB MANAGER
+        // ========================================
+        class DatabaseManager {
+            constructor() {
+                this.dbName = 'CarteiraVendasDB';
+                this.version = 1;
+                this.db = null;
             }
 
-            container.innerHTML = vendas.map((venda, index) => {
-                const status = calcularStatus(venda.valorTotal, venda.valorEntregue);
-                const valorRestante = parseFloat(venda.valorTotal) - parseFloat(venda.valorEntregue);
-                const statusText = status === 'delivered' ? 'Entregue' : 'A Entregar';
-                const statusClass = status === 'delivered' ? 'status-delivered' : 'status-pending';
+            async init() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open(this.dbName, this.version);
 
-                return `
-                    <div class="item">
-                        <div class="item-info">
-                            <div class="item-header">
-                                <span class="item-name">${venda.cliente} - ${venda.produto}</span>
-                                <span class="status-badge ${statusClass}">${statusText}</span>
-                            </div>
-                            <div class="item-values">
-                                <div class="value-item">
-                                    <span class="value-label">Total</span>
-                                    <span class="value-amount">${formatarMoeda(venda.valorTotal)}</span>
-                                </div>
-                                <div class="value-item">
-                                    <span class="value-label">Entregue</span>
-                                    <span class="value-amount">${formatarMoeda(venda.valorEntregue)}</span>
-                                </div>
-                                <div class="value-item">
-                                    <span class="value-label">Restante</span>
-                                    <span class="value-amount">${formatarMoeda(valorRestante)}</span>
-                                </div>
-                            </div>
-                        </div>
-                        ${!isExported ? `<button class="btn-delete" onclick="excluirVenda(${index})" title="Excluir">×</button>` : ''}
-                    </div>
-                `;
-            }).join('');
-        }
+                    request.onerror = () => reject(request.error);
+                    request.onsuccess = () => {
+                        this.db = request.result;
+                        resolve(this.db);
+                    };
 
-        function adicionarVenda(event) {
-            event.preventDefault();
+                    request.onupgradeneeded = (event) => {
+                        const db = event.target.result;
 
-            const venda = {
-                cliente: document.getElementById('cliente').value.trim(),
-                produto: document.getElementById('produto').value.trim(),
-                valorTotal: parseFloat(document.getElementById('valorTotal').value),
-                valorEntregue: parseFloat(document.getElementById('valorEntregue').value)
-            };
+                        // Clientes
+                        if (!db.objectStoreNames.contains('clientes')) {
+                            const clientesStore = db.createObjectStore('clientes', { keyPath: 'id', autoIncrement: true });
+                            clientesStore.createIndex('nome', 'nome', { unique: false });
+                            clientesStore.createIndex('cpf', 'cpf', { unique: false });
+                        }
 
-            const vendas = carregarVendas();
-            vendas.push(venda);
-            salvarVendas(vendas);
+                        // Produtos
+                        if (!db.objectStoreNames.contains('produtos')) {
+                            const produtosStore = db.createObjectStore('produtos', { keyPath: 'id', autoIncrement: true });
+                            produtosStore.createIndex('nome', 'nome', { unique: false });
+                            produtosStore.createIndex('categoria', 'categoria', { unique: false });
+                        }
 
-            limparFormulario();
-            atualizarInterface();
-        }
+                        // Vendas
+                        if (!db.objectStoreNames.contains('vendas')) {
+                            const vendasStore = db.createObjectStore('vendas', { keyPath: 'id', autoIncrement: true });
+                            vendasStore.createIndex('clienteId', 'clienteId', { unique: false });
+                            vendasStore.createIndex('data', 'data', { unique: false });
+                            vendasStore.createIndex('status', 'status', { unique: false });
+                        }
+                    };
+                });
+            }
 
-        function excluirVenda(index) {
-            if (confirm('Deseja realmente excluir esta venda?')) {
-                const vendas = carregarVendas();
-                vendas.splice(index, 1);
-                salvarVendas(vendas);
-                atualizarInterface();
+            // CRUD Genérico
+            async adicionar(storeName, data) {
+                const tx = this.db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                return new Promise((resolve, reject) => {
+                    const request = store.add(data);
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async obterTodos(storeName) {
+                const tx = this.db.transaction(storeName, 'readonly');
+                const store = tx.objectStore(storeName);
+                return new Promise((resolve, reject) => {
+                    const request = store.getAll();
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async obterPorId(storeName, id) {
+                const tx = this.db.transaction(storeName, 'readonly');
+                const store = tx.objectStore(storeName);
+                return new Promise((resolve, reject) => {
+                    const request = store.get(id);
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async atualizar(storeName, data) {
+                const tx = this.db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                return new Promise((resolve, reject) => {
+                    const request = store.put(data);
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async deletar(storeName, id) {
+                const tx = this.db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                return new Promise((resolve, reject) => {
+                    const request = store.delete(id);
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            // Queries específicas
+            async obterVendasPorCliente(clienteId) {
+                const tx = this.db.transaction('vendas', 'readonly');
+                const store = tx.objectStore('vendas');
+                const index = store.index('clienteId');
+                return new Promise((resolve, reject) => {
+                    const request = index.getAll(clienteId);
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
             }
         }
 
-        function limparFormulario() {
-            document.getElementById('vendaForm').reset();
-            document.getElementById('valorEntregue').value = '0';
-        }
+        // Instância global
+        const db = new DatabaseManager();
+        let vendasCache = [];
+        let clientesCache = [];
+        let produtosCache = [];
 
-        function atualizarInterface() {
-            atualizarKPIs();
-            renderizarVendas();
-        }
-
-        async function exportarPDF() {
-            const { jsPDF } = window.jspdf;
-            
-            // Oculta botões temporariamente
-            const exportButtons = document.querySelector('.export-buttons');
-            const formCard = document.querySelector('.form-card');
-            exportButtons.style.display = 'none';
-            formCard.style.display = 'none';
-
+        // ========================================
+        // INICIALIZAÇÃO
+        // ========================================
+        async function inicializar() {
             try {
-                const canvas = await html2canvas(document.body, {
-                    scale: 2,
-                    logging: false,
-                    useCORS: true
+                await db.init();
+                await carregarDados();
+                await seedDataSeNecessario();
+                setDataHoje();
+                mostrarToast('Sistema carregado com sucesso!', 'success');
+            } catch (error) {
+                console.error('Erro ao inicializar:', error);
+                mostrarToast('Erro ao carregar sistema', 'error');
+            }
+        }
+
+        async function seedDataSeNecessario() {
+            const clientes = await db.obterTodos('clientes');
+            if (clientes.length === 0) {
+                // Adiciona dados de exemplo
+                await db.adicionar('clientes', {
+                    nome: 'João Silva',
+                    cpf: '123.456.789-00',
+                    telefone: '(11) 98765-4321',
+                    email: 'joao@email.com',
+                    endereco: 'Rua das Flores, 123, Centro',
+                    dataCadastro: new Date().toISOString()
                 });
 
-                const imgWidth = 210;
-                const pageHeight = 297;
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                const imgData = canvas.toDataURL('image/png');
-                
-                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-                pdf.save('carteira-vendas.pdf');
-            } finally {
-                exportButtons.style.display = 'flex';
-                formCard.style.display = 'block';
+                await db.adicionar('produtos', {
+                    nome: 'Semente de Soja',
+                    categoria: 'Sementes',
+                    preco: 150.00,
+                    unidade: 'kg',
+                    estoque: 500,
+                    descricao: 'Semente de soja para plantio'
+                });
+
+                await carregarDados();
             }
         }
 
-        function exportarHTML() {
-            const vendas = carregarVendas();
-            const dataStr = JSON.stringify(vendas);
-            
-            const htmlTemplate = `<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carteira de Vendas - Exportado</title>
-    <style>
-        ${document.querySelector('style').textContent}
-    </style>
-</head>
-<body>
-    <script>
-        window.__EXPORTED_DATA__ = ${dataStr};
-    </script>
-    ${document.body.innerHTML.replace(/<script[\s\S]*?<\/script>/gi, '')}
-    <script>
-        ${document.querySelector('script:not([src])').textContent}
-        
-        // Inicia interface com dados exportados
-        document.addEventListener('DOMContentLoaded', () => {
-            atualizarInterface();
-        });
-    </script>
-</body>
-</html>`;
+        async function carregarDados() {
+            clientesCache = await db.obterTodos('clientes');
+            produtosCache = await db.obterTodos('produtos');
+            vendasCache = await db.obterTodos('vendas');
 
-            const blob = new Blob([htmlTemplate], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'carteira-vendas.html';
-            a.click();
-            URL.revokeObjectURL(url);
+            carregarSelectClientes();
+            carregarSelectProdutos();
+            carregarFiltros();
+            atualizarTabela();
+            atualizarResumo();
         }
 
-        // Event Listeners
-        document.getElementById('vendaForm').addEventListener('submit', adicionarVenda);
+        function setDataHoje() {
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('vendaData').value = hoje;
+        }
 
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', () => {
-            atualizarInterface();
-            
-            // Oculta formulário se for versão exportada
-            if (isExported) {
-                document.querySelector('.form-card').style.display = 'none';
-                document.querySelector('.export-buttons').style.display = 'none';
+        // ========================================
+        // TABS
+        // ========================================
+        function trocarTab(tab) {
+            // Atualiza tabs
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Atualiza conteúdo
+            document.querySelectorAll('.form-card').forEach(card => card.classList.remove('active'));
+            document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+        }
+
+        // ========================================
+        // VENDAS
+        // ========================================
+        function carregarSelectClientes() {
+            const select = document.getElementById('vendaCliente');
+            select.innerHTML = '<option value="">Selecione o cliente</option>';
+            clientesCache.forEach(cliente => {
+                const option = document.createElement('option');
+                option.value = cliente.id;
+                option.textContent = cliente.nome;
+                select.appendChild(option);
+            });
+        }
+
+        function carregarSelectProdutos() {
+            const select = document.getElementById('vendaProduto');
+            select.innerHTML = '<option value="">Selecione o produto</option>';
+            produtosCache.forEach(produto => {
+                const option = document.createElement('option');
+                option.value = produto.id;
+                option.textContent = `${produto.nome} - R$ ${produto.preco.toFixed(2)}/${produto.unidade}`;
+                select.appendChild(option);
+            });
+        }
+
+        function calcularTotalVenda() {
+            const produtoId = parseInt(document.getElementById('vendaProduto').value);
+            const quantidade = parseFloat(document.getElementById('vendaQuantidade').value) || 0;
+
+            if (produtoId) {
+                const produto = produtosCache.find(p => p.id === produtoId);
+                if (produto) {
+                    const total = produto.preco * quantidade;
+                    document.getElementById('vendaValorTotal').value = 'R$ ' + total.toFixed(2);
+                }
             }
-        });
+        }
+
+        async function adicionarVenda(event) {
+            event.preventDefault();
+
+            const clienteId = parseInt(document.getElementById('vendaCliente').value);
+            const produtoId = parseInt(document.getElementById('vendaProduto').value);
+            const quantidade = parseFloat(document.getElementById('vendaQuantidade').value);
+            const valorEntregue = parseFloat(document.getElementById('vendaValorEntregue').value) || 0;
+            const data = document.getElementById('vendaData').value;
+            const obs = document.getElementById('vendaObs').value;
+
+            const produto = produtosCache.find(p => p.id === produtoId);
+            const valorTotal = produto.preco * quantidade;
+
+            const venda = {
+                clienteId,
+                produtoId,
+                quantidade,
+                valorTotal,
+                valorEntregue,
+                data: new Date(data).toISOString(),
+                observacoes: obs,
+                status: valorEntregue >= valorTotal ? 'concluida' : 'pendente',
+                dataCriacao: new Date().toISOString()
+            };
+
+            try {
+                await db.adicionar('vendas', venda);
+                await carregarDados();
+                limparFormVenda();
+                mostrarToast('Venda adicionada com sucesso!', 'success');
+            } catch (error) {
+                console.error('Erro ao adicionar venda:', error);
+                mostrarToast('Erro ao adicionar venda', 'error');
+            }
+        }
+
+        function limparFormVenda() {
+            document.getElementById('formVenda').reset();
+            document.getElementById('vendaValorTotal').value = '';
+            setDataHoje();
+        }
+
+        // ========================================
+        // CLIENTES
+        // ========================================
+        async function adicionarCliente(event) {
+            event.preventDefault();
+
+            const cliente = {
+                nome: document.getElementById('clienteNome').value,
+                cpf: document.getElementById('clienteCPF').value,
+                telefone: document.getElementById('clienteTelefone').value,
+                email: document.getElementById('clienteEmail').value,
+                endereco: document.getElementById('clienteEndereco').value,
+                dataCadastro: new Date().toISOString()
+            };
+
+            try {
+                await db.adicionar('clientes', cliente);
+                await carregarDados();
+                limparFormCliente();
+                mostrarToast('Cliente adicionado com sucesso!', 'success');
+            } catch (error) {
+                console.error('Erro ao adicionar cliente:', error);
+                mostrarToast('Erro ao adicionar cliente', 'error');
+            }
+        }
+
+        function limparFormCliente() {
+            document.getElementById('formCliente').reset();
+        }
+
+        // ========================================
+        // PRODUTOS
+        // ========================================
+        async function adicionarProduto(event) {
+            event.preventDefault();
+
+            const produto = {
+                nome: document.getElementById('produtoNome').value,
+                categoria: document.getElementById('produtoCategoria').value,
+                preco: parseFloat(document.getElementById('produtoPreco').value),
+                unidade: document.getElementById('produtoUnidade').value,
+                estoque: parseFloat(document.getElementById('produtoEstoque').value) || 0,
+                descricao: document.getElementById('produtoDescricao').value,
+                dataCadastro: new Date().toISOString()
+            };
+
+            try {
+                await db.adicionar('produtos', produto);
+                await carregarDados();
+                limparFormProduto();
+                mostrarToast('Produto adicionado com sucesso!', 'success');
+            } catch (error) {
+                console.error('Erro ao adicionar produto:', error);
+                mostrarToast('Erro ao adicionar produto', 'error');
+            }
+        }
+
+        function limparFormProduto() {
+            document.getElementById('formProduto').reset();
+        }
+
+        // ========================================
+        // TABELA E FILTROS
+        // ========================================
+        function carregarFiltros() {
+            const filtroCliente = document.getElementById('filtroCliente');
+            filtroCliente.innerHTML = '<option value="">Todos os clientes</option>';
+            clientesCache.forEach(cliente => {
+                const option = document.createElement('option');
+                option.value = cliente.id;
+                option.textContent = cliente.nome;
+                filtroCliente.appendChild(option);
+            });
+        }
+
+        function filtrarVendas() {
+            atualizarTabela();
+        }
+
+        function buscarVendas() {
+            atualizarTabela();
+        }
+
+        function atualizarTabela() {
+            const tbody = document.querySelector('#tabelaVendas tbody');
+            const emptyState = document.getElementById('emptyState');
+            
+            let vendas = [...vendasCache];
+
+            // Filtro por cliente
+            const filtroClienteId = parseInt(document.getElementById('filtroCliente').value);
+            if (filtroClienteId) {
+                vendas = vendas.filter(v => v.clienteId === filtroClienteId);
+            }
+
+            // Filtro por status
+            const filtroStatus = document.getElementById('filtroStatus').value;
+            if (filtroStatus) {
+                vendas = vendas.filter(v => v.status === filtroStatus);
+            }
+
+            // Busca
+            const busca = document.getElementById('searchVendas').value.toLowerCase();
+            if (busca) {
+                vendas = vendas.filter(v => {
+                    const cliente = clientesCache.find(c => c.id === v.clienteId);
+                    const produto = produtosCache.find(p => p.id === v.produtoId);
+                    return (cliente?.nome.toLowerCase().includes(busca) ||
+                            produto?.nome.toLowerCase().includes(busca));
+                });
+            }
+
+            tbody.innerHTML = '';
+
+            if (vendas.length === 0) {
+                emptyState.style.display = 'block';
+                document.querySelector('.table-wrapper').style.display = 'none';
+            } else {
+                emptyState.style.display = 'none';
+                document.querySelector('.table-wrapper').style.display = 'block';
+
+                vendas.sort((a, b) => new Date(b.data) - new Date(a.data)).forEach(venda => {
+                    const cliente = clientesCache.find(c => c.id === venda.clienteId);
+                    const produto = produtosCache.find(p => p.id === venda.produtoId);
+                    const data = new Date(venda.data).toLocaleDateString('pt-BR');
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${data}</td>
+                        <td>${cliente?.nome || 'N/A'}</td>
+                        <td>${produto?.nome || 'N/A'}</td>
+                        <td>${venda.quantidade} ${produto?.unidade || ''}</td>
+                        <td>R$ ${venda.valorTotal.toFixed(2)}</td>
+                        <td>R$ ${venda.valorEntregue.toFixed(2)}</td>
+                        <td><span class="status-badge status-${venda.status}">${venda.status === 'concluida' ? 'Concluída' : 'Pendente'}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn" onclick="verDetalhes(${venda.id})" title="Ver detalhes">👁️</button>
+                                <button class="action-btn" onclick="deletarVenda(${venda.id})" title="Deletar">🗑️</button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+
+        async function deletarVenda(id) {
+            if (confirm('Tem certeza que deseja deletar esta venda?')) {
+                try {
+                    await db.deletar('vendas', id);
+                    await carregarDados();
+                    mostrarToast('Venda deletada com sucesso!', 'success');
+                } catch (error) {
+                    console.error('Erro ao deletar venda:', error);
+                    mostrarToast('Erro ao deletar venda', 'error');
+                }
+            }
+        }
+
+        function verDetalhes(id) {
+            const venda = vendasCache.find(v => v.id === id);
+            const cliente = clientesCache.find(c => c.id === venda.clienteId);
+            const produto = produtosCache.find(p => p.id === venda.produtoId);
+
+            const html = `
+                <div style="display: grid; gap: 16px;">
+                    <div>
+                        <strong>Cliente:</strong><br>
+                        ${cliente?.nome}<br>
+                        ${cliente?.telefone || ''}<br>
+                        ${cliente?.email || ''}
+                    </div>
+                    <div>
+                        <strong>Produto:</strong><br>
+                        ${produto?.nome}<br>
+                        Quantidade: ${venda.quantidade} ${produto?.unidade}
+                    </div>
+                    <div>
+                        <strong>Valores:</strong><br>
+                        Total: R$ ${venda.valorTotal.toFixed(2)}<br>
+                        Entregue: R$ ${venda.valorEntregue.toFixed(2)}<br>
+                        Restante: R$ ${(venda.valorTotal - venda.valorEntregue).toFixed(2)}
+                    </div>
+                    ${venda.observacoes ? `<div><strong>Observações:</strong><br>${venda.observacoes}</div>` : ''}
+                </div>
+            `;
+
+            document.getElementById('modalDetalhesBody').innerHTML = html;
+            document.getElementById('modalDetalhes').classList.add('active');
+        }
+
+        function fecharModal(event) {
+            if (!event || event.target.classList.contains('modal-overlay')) {
+                document.getElementById('modalDetalhes').classList.remove('active');
+            }
+        }
+
+        // ========================================
+        // RESUMO
+        // ========================================
+        function atualizarResumo() {
+            const totalVendas = vendasCache.reduce((sum, v) => sum + v.valorTotal, 0);
+            const totalRecebido = vendasCache.reduce((sum, v) => sum + v.valorEntregue, 0);
+            const totalReceber = totalVendas - totalRecebido;
+            const totalClientes = clientesCache.length;
+
+            document.getElementById('totalVendas').textContent = 'R$ ' + totalVendas.toFixed(2);
+            document.getElementById('totalRecebido').textContent = 'R$ ' + totalRecebido.toFixed(2);
+            document.getElementById('totalReceber').textContent = 'R$ ' + totalReceber.toFixed(2);
+            document.getElementById('totalClientes').textContent = totalClientes;
+
+            document.getElementById('trendVendas').textContent = `↗ ${vendasCache.length} vendas`;
+            const percentRecebido = totalVendas > 0 ? ((totalRecebido / totalVendas) * 100).toFixed(0) : 0;
+            document.getElementById('trendRecebido').textContent = `✓ ${percentRecebido}%`;
+        }
+
+        // ========================================
+        // EXPORTAR PDF
+        // ========================================
+        async function exportarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Título
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Relatório de Vendas', 14, 20);
+
+            // Data do relatório
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, 14, 28);
+
+            // Resumo
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Resumo', 14, 40);
+
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+
+            const totalVendas = vendasCache.reduce((sum, v) => sum + v.valorTotal, 0);
+            const totalRecebido = vendasCache.reduce((sum, v) => sum + v.valorEntregue, 0);
+            const totalReceber = totalVendas - totalRecebido;
+
+            doc.text(`Total de Vendas: R$ ${totalVendas.toFixed(2)}`, 14, 48);
+            doc.text(`Total Recebido: R$ ${totalRecebido.toFixed(2)}`, 14, 54);
+            doc.text(`A Receber: R$ ${totalReceber.toFixed(2)}`, 14, 60);
+            doc.text(`Total de Clientes: ${clientesCache.length}`, 14, 66);
+            doc.text(`Número de Vendas: ${vendasCache.length}`, 14, 72);
+
+            // Tabela de vendas
+            const tableData = vendasCache.map(venda => {
+                const cliente = clientesCache.find(c => c.id === venda.clienteId);
+                const produto = produtosCache.find(p => p.id === venda.produtoId);
+                return [
+                    new Date(venda.data).toLocaleDateString('pt-BR'),
+                    cliente?.nome || 'N/A',
+                    produto?.nome || 'N/A',
+                    `${venda.quantidade} ${produto?.unidade || ''}`,
+                    `R$ ${venda.valorTotal.toFixed(2)}`,
+                    `R$ ${venda.valorEntregue.toFixed(2)}`,
+                    venda.status === 'concluida' ? 'Concluída' : 'Pendente'
+                ];
+            });
+
+            doc.autoTable({
+                head: [['Data', 'Cliente', 'Produto', 'Qtd', 'Total', 'Entregue', 'Status']],
+                body: tableData,
+                startY: 80,
+                styles: { fontSize: 8, cellPadding: 2 },
+                headStyles: { fillColor: [0, 122, 255], textColor: 255 },
+                alternateRowStyles: { fillColor: [245, 245, 247] }
+            });
+
+            // Salvar
+            doc.save(`relatorio-vendas-${new Date().toISOString().split('T')[0]}.pdf`);
+            mostrarToast('PDF exportado com sucesso!', 'success');
+        }
+
+        // ========================================
+        // TOAST
+        // ========================================
+        function mostrarToast(mensagem, tipo = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+
+            toast.className = `toast toast-${tipo} active`;
+            toastMessage.textContent = mensagem;
+
+            setTimeout(() => {
+                toast.classList.remove('active');
+            }, 3000);
+        }
+
+        // Inicializa ao carregar
+        document.addEventListener('DOMContentLoaded', inicializar);
     </script>
 </body>
 </html>
